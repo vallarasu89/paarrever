@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="12" fill="#7A1034"/>
+  <rect x="34" y="14" width="22" height="22" rx="4" fill="#F9AD24"/>
+  <text x="8" y="32" font-family="'Inter', sans-serif" font-weight="900" font-size="18" fill="#FFFFFF">PA</text>
+  <text x="37" y="31" font-family="'Inter', sans-serif" font-weight="700" font-size="15" fill="#7A1034">ev</text>
+  <rect x="8" y="40" width="48" height="14" rx="2" fill="#FFFFFF"/>
+  <text x="11" y="51" font-family="'Inter', sans-serif" font-weight="800" font-size="7.5" fill="#7A1034" letter-spacing="1.2">SUPERMARKET</text>
+</svg>
