@@ -1,11 +1,13 @@
 import React from 'react';
 import { PageTransition } from '@/components/animations/PageTransition';
 import { HeroSection } from './sections/HeroSection';
+import { BrandExperienceSection } from './sections/BrandExperienceSection';
 import { BrandStatsSection } from './sections/BrandStatsSection';
 import { CategoryGridSection } from './sections/CategoryGridSection';
 import { WhyChooseSection } from './sections/WhyChooseSection';
 import { FeaturedProductsSection } from './sections/FeaturedProductsSection';
 import { SpecialOffersSection } from './sections/SpecialOffersSection';
+import { StoreVideoSection } from './sections/StoreVideoSection';
 import { CommunityImpactSection } from './sections/CommunityImpactSection';
 import { StorePreviewSection } from './sections/StorePreviewSection';
 import { TestimonialsSection } from './sections/TestimonialsSection';
@@ -16,23 +18,29 @@ import { ContactCtaSection } from './sections/ContactCtaSection';
 export const Home: React.FC = () => {
   return (
     <PageTransition>
-      {/* 3. Premium Hero Section */}
+      {/* 1. Hero Section */}
       <HeroSection />
 
-      {/* 4. Brand Statistics */}
+      {/* 2. Brand Experiences at PAARR - Grand New Opening (Hypermall Building Image) */}
+      <BrandExperienceSection />
+
+      {/* 3. Brand Statistics */}
       <BrandStatsSection />
 
-      {/* 5. Shop by Categories */}
+      {/* 4. Shop by Categories */}
       <CategoryGridSection />
 
-      {/* 6. Why Choose PAARR EVER */}
+      {/* 5. Why Choose PAARR EVER */}
       <WhyChooseSection />
 
-      {/* 7. Featured Products */}
+      {/* 6. Featured Products */}
       <FeaturedProductsSection />
 
-      {/* 8. Special Offers */}
+      {/* 7. Special Offers */}
       <SpecialOffersSection />
+
+      {/* 8. Virtual Store Tour Video Section (Separate Cinematic Video Experience) */}
+      <StoreVideoSection />
 
       {/* 9. Community Impact */}
       <CommunityImpactSection />
@@ -43,13 +51,13 @@ export const Home: React.FC = () => {
       {/* 11. Customer Testimonials */}
       <TestimonialsSection />
 
-      {/* 13. About Brand */}
+      {/* 12. About Brand */}
       <AboutBrandSection />
 
-      {/* 14. FAQs */}
+      {/* 13. FAQs */}
       <FaqSection />
 
-      {/* 15. Contact CTA */}
+      {/* 14. Contact CTA */}
       <ContactCtaSection />
     </PageTransition>
   );

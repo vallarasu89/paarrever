@@ -49,7 +49,7 @@ export const CommunityImpactSection: React.FC = () => {
           <FadeIn delay={0.3}>
             <div className="space-y-2">
               <span className="font-sans text-4xl sm:text-5xl font-extrabold text-[#570B26] tracking-tight block">
-                25
+                25+
               </span>
               <h3 className="font-sans text-base font-bold text-[#292329]">
                 Store Locations

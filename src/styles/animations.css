@@ -31,3 +31,36 @@
 .pulse-subtle {
   animation: pulse-subtle 2.5s infinite ease-in-out;
 }
+
+/* Fast vivid blinking beacon for live flagship mall indicator */
+@keyframes live-blink {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 14px rgba(229, 57, 53, 0.9), 0 0 4px rgba(249, 173, 36, 0.8);
+  }
+  50% {
+    opacity: 0.25;
+    transform: scale(0.92);
+    box-shadow: 0 0 2px rgba(229, 57, 53, 0.2);
+  }
+}
+
+.live-beacon-blink {
+  animation: live-blink 1s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+@keyframes gold-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.gold-shimmer-border {
+  background: linear-gradient(90deg, #F9AD24, #FFF3D6, #F9AD24, #B45309, #F9AD24);
+  background-size: 300% 100%;
+  animation: gold-shimmer 4s infinite linear;
+}

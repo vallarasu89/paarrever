@@ -3,7 +3,7 @@ export const BRAND_INFO = {
   legalName: 'Paarr Ever Retail Supermarkets Private Limited',
   tagline: 'Your Neighborhood Modern Supermarket',
   description: 'Providing authentic South Indian essentials, farm-fresh produce, and everyday groceries across 25+ neighborhoods in Chennai and Tamil Nadu.',
-  phone: '044-46143999 / 991',
+  phone: '044-46143999',
   email: 'care@paarrever.com',
   corporateAddress: 'No. 14, Trunk Road, Valasaravakkam, Chennai - 600087, Tamil Nadu, India',
   storeHours: '7:00 AM – 10:30 PM (All 7 Days)',

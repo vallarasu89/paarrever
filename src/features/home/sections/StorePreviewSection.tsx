@@ -66,9 +66,11 @@ export const StorePreviewSection: React.FC = () => {
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-lg font-medium text-[#570B26] mb-1.5">
-                    {store.name}
-                  </h3>
+                  <Link to={`/stores/${store.id}`} className="block group">
+                    <h3 className="font-serif text-lg font-medium text-[#570B26] group-hover:text-[#7A1034] transition-colors mb-1.5">
+                      {store.name}
+                    </h3>
+                  </Link>
 
                   <p className="text-xs text-[#292329]/80 font-sans line-clamp-2 leading-relaxed mb-4">
                     {store.address}

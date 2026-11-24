@@ -33,9 +33,21 @@
     --color-light-gold: #FCE2A9;
   }
 
+  /* Universal Lining Numbers across ALL pages & fonts (straight, modern, baseline-aligned) */
+  *,
+  *::before,
+  *::after {
+    font-variant-numeric: lining-nums tabular-nums !important;
+    -webkit-font-feature-settings: "lnum" 1, "tnum" 1 !important;
+    font-feature-settings: "lnum" 1, "tnum" 1 !important;
+  }
+
   body {
     @apply bg-[#FFF9F0] text-[#292329] font-sans antialiased overflow-x-hidden;
     text-rendering: optimizeLegibility;
+    font-variant-numeric: lining-nums tabular-nums !important;
+    -webkit-font-feature-settings: "lnum" 1, "tnum" 1 !important;
+    font-feature-settings: "lnum" 1, "tnum" 1 !important;
   }
 
   h1,
@@ -45,6 +57,9 @@
   h5,
   h6 {
     @apply font-serif text-[#570B26] tracking-tight;
+    font-variant-numeric: lining-nums tabular-nums !important;
+    -webkit-font-feature-settings: "lnum" 1, "tnum" 1 !important;
+    font-feature-settings: "lnum" 1, "tnum" 1 !important;
   }
 }
 

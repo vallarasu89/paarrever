@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ANNOUNCEMENTS } from '@/data/navigation';
+import { useLanguage } from '@/context/LanguageContext';
 import { ChevronRight, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const AnnouncementBar: React.FC = () => {
+  const { language, t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -15,6 +17,10 @@ export const AnnouncementBar: React.FC = () => {
   }, []);
 
   const current = ANNOUNCEMENTS[currentIndex];
+
+  const displayMessage = language === 'TA'
+    ? (currentIndex === 0 ? t('announcement.welcome') : t('announcement.lowestPrice'))
+    : current.message;
 
   return (
     <div className="bg-[#570B26] text-white text-xs border-b border-[#7A1034] py-2 px-4 relative overflow-hidden select-none">
@@ -34,8 +40,12 @@ export const AnnouncementBar: React.FC = () => {
               transition={{ duration: 0.35 }}
               className="flex items-center gap-2"
             >
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E53935] opacity-80" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E53935]" />
+              </span>
               <span className="text-[#FFF9F0]/90 truncate max-w-[280px] sm:max-w-md md:max-w-lg">
-                {current.message}
+                {displayMessage}
               </span>
               {current.highlightText && current.href && (
                 <Link

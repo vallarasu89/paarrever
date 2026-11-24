@@ -1,36 +1,50 @@
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { STORES } from '@/data/stores';
-import { StoreLocation } from '@/types/store';
 import { Container } from '@/components/common/Container/Container';
 import { Breadcrumb } from '@/components/common/Breadcrumb/Breadcrumb';
 import { PageTransition } from '@/components/animations/PageTransition';
+import { FadeIn } from '@/components/animations/FadeIn';
+import { useLanguage } from '@/context/LanguageContext';
+import hypermallImg from '@/assets/images/hypermall.jpg';
 import {
   MapPin,
   Search,
-  Phone,
   Clock,
   Navigation,
   Sparkles,
   Car,
   X,
   CreditCard,
-  Gift,
-  ExternalLink,
   Store,
-  CheckCircle2
+  CheckCircle2,
+  ArrowRight,
+  Image as ImageIcon,
+  ShoppingBag,
+  Tv,
+  Shirt,
+  Sparkle,
+  ExternalLink,
 } from 'lucide-react';
 
 export const StoreLocator: React.FC = () => {
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedZone, setSelectedZone] = useState('All');
-  const [activeStore, setActiveStore] = useState<StoreLocation>(STORES[0]);
-  const [mapMode, setMapMode] = useState<'interactive' | 'google'>('google');
 
   const zones = ['All', 'Chennai Central', 'Chennai South', 'Chennai North', 'Suburbs'];
-  const popularAreas = ['Mylapore', 'Besant Nagar', 'Kodambakkam', 'Palavakkam', 'Royapettah', 'Kotturpuram', 'Thiruvanmiyur'];
+  const popularAreas = ['OMR', 'Mylapore', 'Besant Nagar', 'Kodambakkam', 'Palavakkam', 'Royapettah', 'Kotturpuram'];
+
+  // The Grand Opening Flagship Hypermarket
+  const flagshipStore = STORES.find((s) => s.id === 'store-flagship-hypermarket') || STORES[0];
+
+  // The neighborhood stores (excluding the flagship spotlight from the standard neighborhood grid)
+  const neighborhoodStores = useMemo(() => {
+    return STORES.filter((s) => s.id !== 'store-flagship-hypermarket');
+  }, []);
 
   const filteredStores = useMemo(() => {
-    return STORES.filter((store) => {
+    return neighborhoodStores.filter((store) => {
       const q = searchQuery.toLowerCase().trim();
       const matchesSearch =
         !q ||
@@ -43,64 +57,68 @@ export const StoreLocator: React.FC = () => {
 
       return matchesSearch && matchesZone;
     });
-  }, [searchQuery, selectedZone]);
+  }, [searchQuery, selectedZone, neighborhoodStores]);
 
-  // Coordinate normalization for interactive map pins
-  const minLat = 12.93;
-  const maxLat = 13.12;
-  const minLng = 80.14;
-  const maxLng = 80.28;
-
-  const getPinPos = (lat: number, lng: number) => {
-    const y = ((maxLat - Math.max(minLat, Math.min(maxLat, lat))) / (maxLat - minLat)) * 74 + 13;
-    const x = ((Math.max(minLng, Math.min(maxLng, lng)) - minLng) / (maxLng - minLng)) * 74 + 13;
-    return { top: `${y}%`, left: `${x}%` };
-  };
+  // Check if search specifically matched the flagship
+  const flagshipMatchesSearch = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      flagshipStore.name.toLowerCase().includes(q) ||
+      flagshipStore.area.toLowerCase().includes(q) ||
+      flagshipStore.address.toLowerCase().includes(q) ||
+      flagshipStore.pincode.includes(q) ||
+      'hypermarket'.includes(q) ||
+      'vasanth'.includes(q) ||
+      'style union'.includes(q) ||
+      'ethirajulu'.includes(q)
+    );
+  }, [searchQuery, flagshipStore]);
 
   return (
     <PageTransition>
-      {/* Clean, Modern Hero Banner with Supermarket Storefront Photo */}
-      <section className="relative overflow-hidden bg-[#570B26] text-white py-10 sm:py-12 border-b border-[#7A1034]">
+      {/* Hero Banner featuring the Flagship Hypermall Complex photo */}
+      <section className="relative overflow-hidden bg-[#570B26] text-white py-10 sm:py-14 border-b border-[#7A1034]">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=1920&q=85"
-            alt="PAARR EVER Supermarket Storefront"
-            className="w-full h-full object-cover object-right sm:object-center opacity-85 scale-105"
+            src={hypermallImg}
+            alt="Brand Experiences at PAARR Hypermarket Complex - Flagship Destination"
+            className="w-full h-full object-cover object-center opacity-45 scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#570B26] via-[#570B26]/85 sm:via-[#570B26]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#570B26] via-[#570B26]/90 to-[#570B26]/60" />
         </div>
 
         <Container className="relative z-10">
-          <div className="max-w-2xl">
-            <Breadcrumb items={[{ label: 'Store Locator' }]} variant="dark" />
+          <div className="max-w-3xl">
+            <Breadcrumb items={[{ label: t('nav.stores') }]} variant="dark" />
 
-            <div className="mt-3">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F9AD24] text-[#570B26] text-[11px] font-extrabold uppercase tracking-wider mb-2.5 shadow-sm">
+            <div className="mt-3 space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F9AD24] text-[#570B26] text-[11px] font-extrabold uppercase tracking-wider shadow-sm">
                 <Sparkles className="w-3.5 h-3.5" />
-                25+ Stores Across Chennai
+                <span>{language === 'TA' ? 'பிரம்மாண்ட புதிய திறப்பு விழா • 25+ சென்னை கிளைகள்' : 'Now Open • PAARR Hypermarket Complex & 25+ Chennai Supermarkets'}</span>
               </div>
 
-              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight drop-shadow-sm">
-                Find Your Neighborhood Store
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-white leading-tight tracking-tight drop-shadow-sm">
+                {t('stores.heroTitle')}
               </h1>
 
-              <p className="mt-2 text-xs sm:text-sm text-[#FFF9F0]/95 font-sans leading-relaxed max-w-xl">
-                Air-conditioned aisles, 7:00 AM daily farm produce, cold-pressed Mara Chekku oil counters, and courteous neighborhood service at every branch.
+              <p className="text-sm sm:text-base text-[#FFF9F0]/90 font-sans leading-relaxed max-w-2xl">
+                {t('stores.heroSubtitle')}
               </p>
 
-              {/* Compact Metrics Row */}
-              <div className="mt-4 pt-3 border-t border-white/20 flex flex-wrap items-center gap-4 text-xs font-bold text-[#FCE2A9]">
+              {/* Quick Metrics */}
+              <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-bold text-[#FCE2A9]">
                 <span className="flex items-center gap-1.5 text-white">
                   <Clock className="w-3.5 h-3.5 text-[#F9AD24]" />
-                  Open 7:00 AM – 10:30 PM (All 7 Days)
+                  Open 7:00 AM – 11:00 PM (All 7 Days)
                 </span>
                 <span className="flex items-center gap-1.5 text-white">
                   <Car className="w-3.5 h-3.5 text-[#F9AD24]" />
-                  Dedicated Customer Parking
+                  Spacious Dedicated Customer Parking
                 </span>
                 <span className="flex items-center gap-1.5 text-white">
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#F9AD24]" />
-                  Mara Chekku Oils &amp; Fresh Produce
+                  Mara Chekku Oils &amp; 5000+ Fresh SKUs
                 </span>
               </div>
             </div>
@@ -108,11 +126,156 @@ export const StoreLocator: React.FC = () => {
         </Container>
       </section>
 
-      {/* Modern Search & Zone Filter Bar */}
-      <section className="bg-white border-b border-[#EADDE2] shadow-xs py-4 sticky top-[72px] z-30">
+      {/* INDIVIDUAL FLAGSHIP SPOTLIGHT (Main Highlight - Clean Elite Luxury Presentation) */}
+      {flagshipMatchesSearch && (
+        <section className="py-10 sm:py-14 bg-gradient-to-b from-[#FFFDF9] via-[#FAF3EA] to-[#FFF9F0] border-b border-[#EADDE2] relative overflow-hidden">
+          {/* Subtle Warm Ambient Glow */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#F9AD24]/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#7A1034]/5 rounded-full blur-3xl pointer-events-none" />
+
+          <Container className="relative z-10">
+            {/* Spotlight Eyebrow */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#570B26] text-[#FCE2A9] text-xs font-black tracking-widest uppercase shadow-sm border border-[#F9AD24]/50">
+                <Sparkles className="w-3.5 h-3.5 text-[#F9AD24] animate-pulse" />
+                <span>{t('stores.flagshipSpotlight')}</span>
+                <span className="w-2 h-2 rounded-full bg-[#E53935] live-beacon-blink ml-0.5" />
+              </div>
+
+              <span className="text-xs text-[#7A1034] font-bold hidden sm:inline-block">
+                ★ {language === 'TA' ? 'சென்னையின் மிகப்பெரிய மல்டி-பிராண்ட் தளம்' : "Chennai's Largest Multi-Brand Shopping Destination"}
+              </span>
+            </div>
+
+            {/* Standalone Mega Showcase Card - Clean Elite Look */}
+            <FadeIn delay={0.1}>
+              <div className="rounded-3xl bg-white border-2 border-[#EADDE2] hover:border-[#7A1034]/40 shadow-xl hover:shadow-2xl overflow-hidden group transition-all duration-300 ring-1 ring-[#570B26]/5">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch">
+                  {/* Left Column: Monumental Building Photo (7 Cols) - Full Image Uncropped */}
+                  <Link
+                    to={`/stores/${flagshipStore.id}`}
+                    className="lg:col-span-7 relative overflow-hidden bg-[#1A030C] flex items-center justify-center min-h-[320px] sm:min-h-[420px]"
+                  >
+                    <img
+                      src={flagshipStore.imageUrl}
+                      alt={flagshipStore.name}
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent pointer-events-none" />
+
+                    {/* Top Badges */}
+                    <div className="absolute top-4 left-4 flex items-center gap-2 z-10">
+                      <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E53935] text-white text-xs font-black uppercase tracking-wider shadow-lg">
+                        <span className="w-2.5 h-2.5 rounded-full bg-white live-beacon-blink" />
+                        {t('badge.grandOpening')}
+                      </span>
+                      <span className="px-3 py-1.5 rounded-full bg-black/75 backdrop-blur-md text-[#FCE2A9] text-xs font-bold border border-[#F9AD24]/40">
+                        {t('badge.flagship')}
+                      </span>
+                    </div>
+
+                    {/* Bottom Photo Badges */}
+                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white z-10">
+                      <div className="flex items-center gap-1.5 text-xs font-bold bg-black/70 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/20">
+                        <ImageIcon className="w-4 h-4 text-[#F9AD24]" />
+                        <span>5 {t('stores.photosCount')}</span>
+                      </div>
+
+                      <div className="font-mono text-xs font-black bg-[#F9AD24] text-[#2E0413] px-3.5 py-1.5 rounded-xl shadow-md">
+                        PIN 600096 &bull; OMR
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Right Column: Editorial & Brand Experience Highlights (5 Cols) */}
+                  <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between space-y-6 bg-white text-[#292329]">
+                    <div className="space-y-4">
+                      {/* Eyebrow */}
+                      <span className="text-xs font-black uppercase tracking-widest text-[#7A1034] block">
+                        {language === 'TA' ? 'பிரமாண்ட மெகா மால் வளாகம் • OMR' : 'Flagship Mega Mall Complex • OMR'}
+                      </span>
+
+                      {/* Main Title & Address */}
+                      <div>
+                        <Link to={`/stores/${flagshipStore.id}`}>
+                          <h2 className="font-serif text-2xl sm:text-3xl font-black text-[#570B26] hover:text-[#7A1034] transition-colors leading-tight">
+                            {flagshipStore.name}
+                          </h2>
+                        </Link>
+                        <p className="text-xs sm:text-sm text-[#292329]/80 font-sans mt-2.5 leading-relaxed">
+                          {flagshipStore.description}
+                        </p>
+                      </div>
+
+                      {/* Location & Landmark */}
+                      <div className="space-y-1.5 text-xs text-[#292329] pt-2 border-t border-[#EADDE2]">
+                        <p className="flex items-start gap-1.5 font-medium">
+                          <MapPin className="w-4 h-4 text-[#7A1034] shrink-0 mt-0.5" />
+                          <span>{flagshipStore.address}</span>
+                        </p>
+                        <p className="text-[11px] text-[#7A1034] pl-5 font-semibold">
+                          Landmark: {flagshipStore.landmark}
+                        </p>
+                      </div>
+
+                      {/* Highlights Pill Badges */}
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        <span className="px-3 py-1.5 rounded-lg bg-[#FFF9F0] border border-[#EADDE2] text-xs font-bold text-[#570B26] flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#7A1034]" />
+                          1,00,000+ Sq.Ft.
+                        </span>
+                        <span className="px-3 py-1.5 rounded-lg bg-[#FFF9F0] border border-[#EADDE2] text-xs font-bold text-[#570B26] flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#7A1034]" />
+                          5000+ Farm SKUs
+                        </span>
+                        <span className="px-3 py-1.5 rounded-lg bg-[#FFF9F0] border border-[#EADDE2] text-xs font-bold text-[#570B26] flex items-center gap-1.5">
+                          <Car className="w-3.5 h-3.5 text-[#7A1034]" />
+                          200+ Parking Bays
+                        </span>
+                        <span className="px-3 py-1.5 rounded-lg bg-[#FFF9F0] border border-[#EADDE2] text-xs font-bold text-[#570B26] flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#7A1034]" />
+                          Central AC Aisles
+                        </span>
+                        <span className="px-3 py-1.5 rounded-lg bg-[#FFF9F0] border border-[#EADDE2] text-xs font-bold text-[#570B26] flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-[#7A1034]" />
+                          7 AM – 11 PM Daily
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Action CTA Buttons */}
+                    <div className="pt-4 border-t border-[#EADDE2] flex flex-col sm:flex-row gap-3">
+                      <Link
+                        to={`/stores/${flagshipStore.id}`}
+                        className="inline-flex items-center justify-center gap-2 flex-1 py-3.5 rounded-xl bg-[#7A1034] hover:bg-[#570B26] text-white font-bold text-xs sm:text-sm shadow-md transition-all group/btn"
+                      >
+                        <span>{t('btn.exploreFlagship')}</span>
+                        <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                      </Link>
+
+                      <a
+                        href={`https://maps.google.com/?q=${encodeURIComponent(flagshipStore.googleMapQuery)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-1.5 px-4 py-3.5 rounded-xl bg-[#F9AD24] text-[#570B26] hover:bg-[#FCE2A9] font-bold text-xs transition-all shadow-xs"
+                      >
+                        <Navigation className="w-3.5 h-3.5" />
+                        <span>{t('btn.getDirections')}</span>
+                        <ExternalLink className="w-3 h-3 ml-0.5" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+          </Container>
+        </section>
+      )}
+
+      {/* Search & Zone Filter Bar - Normal Non-Sticky Scroll */}
+      <section className="bg-white border-b border-[#EADDE2] shadow-xs py-4">
         <Container>
           <div className="space-y-3">
-            {/* Search + Quick Area Shortcuts Row */}
             <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
               <div className="relative flex-1 max-w-xl">
                 <Search className="w-5 h-5 text-[#7A1034] absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -120,7 +283,7 @@ export const StoreLocator: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search neighborhood or pincode (e.g. Mylapore, Besant Nagar, 600004)..."
+                  placeholder={t('stores.searchPlaceholder')}
                   className="w-full pl-11 pr-10 py-2.5 rounded-xl border border-[#EADDE2] bg-[#FFF9F0] text-sm text-[#292329] placeholder-[#766A70] focus:outline-none focus:ring-2 focus:ring-[#7A1034] focus:bg-white transition-all shadow-inner"
                 />
                 {searchQuery && (
@@ -137,7 +300,7 @@ export const StoreLocator: React.FC = () => {
               {/* Quick Area Chips */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                 <span className="text-[11px] font-bold text-[#766A70] uppercase tracking-wider shrink-0 mr-1 hidden sm:inline-block">
-                  Hotspots:
+                  {t('stores.hotspots')}
                 </span>
                 {popularAreas.map((area) => (
                   <button
@@ -173,328 +336,142 @@ export const StoreLocator: React.FC = () => {
               </div>
 
               <span className="text-xs font-bold text-[#7A1034] bg-[#F7EAF0] px-3 py-1 rounded-lg border border-[#7A1034]/20 self-end sm:self-auto shrink-0">
-                Showing {filteredStores.length} of {STORES.length} Stores in Chennai
+                Showing {filteredStores.length} {t('stores.showingStores')}
               </span>
             </div>
           </div>
         </Container>
       </section>
 
-      {/* Main Split Layout: Modern Retail Store Cards (Left) + Interactive Live Map with Pins (Right) */}
-      <section className="py-8 sm:py-12 bg-[#FFF9F0] min-h-[750px]">
+      {/* NEIGHBORHOOD STORES SECTION */}
+      <section className="py-10 sm:py-16 bg-[#FFF9F0] min-h-[600px]">
         <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Left Column: Modern Store Cards List (7 Cols) */}
-            <div className="lg:col-span-7 space-y-4">
-              {filteredStores.length === 0 ? (
-                <div className="p-12 text-center bg-white rounded-2xl border border-[#EADDE2] shadow-sm">
-                  <Store className="w-12 h-12 text-[#7A1034] mx-auto mb-3 opacity-60" />
-                  <h3 className="text-lg font-bold text-[#570B26]">
-                    No stores found matching &ldquo;{searchQuery}&rdquo;
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[#766A70] mt-1.5 max-w-md mx-auto">
-                    Try searching for other Chennai areas like Mylapore, Besant Nagar, Kodambakkam, or reset the filters.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setSelectedZone('All');
-                    }}
-                    className="mt-4 px-5 py-2 rounded-xl bg-[#7A1034] text-white font-bold text-xs hover:bg-[#570B26] transition-colors"
-                  >
-                    Reset Filters
-                  </button>
-                </div>
-              ) : (
-                filteredStores.map((store) => {
-                  const isSelected = activeStore?.id === store.id;
+          {/* Section Subheading */}
+          <div className="mb-8">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#7A1034]">
+              {language === 'TA' ? 'அண்டை கிளைகள்' : 'Neighborhood Supermarket Network'}
+            </span>
+            <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#570B26] mt-1">
+              {t('stores.neighborhoodTitle')}
+            </h3>
+          </div>
 
-                  return (
-                    <div
-                      key={store.id}
-                      onClick={() => setActiveStore(store)}
-                      className={`p-4 sm:p-5 rounded-2xl bg-white border transition-all duration-300 cursor-pointer flex flex-col sm:flex-row gap-4 shadow-sm hover:shadow-md ${
-                        isSelected
-                          ? 'border-[#7A1034] ring-2 ring-[#7A1034]/25 bg-gradient-to-r from-white via-white to-[#FFF9F0]'
-                          : 'border-[#EADDE2] hover:border-[#7A1034]/50 hover:-translate-y-0.5'
-                      }`}
+          {filteredStores.length === 0 ? (
+            <div className="p-12 text-center bg-white rounded-2xl border border-[#EADDE2] shadow-sm max-w-lg mx-auto">
+              <Store className="w-12 h-12 text-[#7A1034] mx-auto mb-3 opacity-60" />
+              <h3 className="text-lg font-bold text-[#570B26]">
+                No stores found matching &ldquo;{searchQuery}&rdquo;
+              </h3>
+              <p className="text-xs sm:text-sm text-[#766A70] mt-1.5 max-w-md mx-auto">
+                Try searching for other Chennai areas like Mylapore, Besant Nagar, Kodambakkam, or reset filters.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedZone('All');
+                }}
+                className="mt-4 px-5 py-2 rounded-xl bg-[#7A1034] text-white font-bold text-xs hover:bg-[#570B26] transition-colors"
+              >
+                {t('btn.resetFilters')}
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+              {filteredStores.map((store, idx) => {
+                const photosCount = store.images?.length || 1;
+
+                return (
+                  <FadeIn key={store.id} delay={Math.min(idx * 0.05, 0.3)}>
+                    <Link
+                      to={`/stores/${store.id}`}
+                      className="group rounded-3xl bg-white border border-[#EADDE2] hover:border-[#7A1034] hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden h-full"
                     >
                       {/* Photo Thumbnail */}
-                      <div className="w-full sm:w-36 h-36 sm:h-auto rounded-xl overflow-hidden shrink-0 relative bg-[#F7EAF0]">
+                      <div className="relative aspect-[16/10] overflow-hidden bg-black/10">
                         <img
                           src={store.imageUrl}
                           alt={store.name}
                           loading="lazy"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
-                        <div className="absolute top-2 left-2 bg-[#7A1034] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
-                          {store.zone.replace('Chennai ', '')}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent pointer-events-none" />
+
+                        {/* Top Zone Badge */}
+                        <div className="absolute top-3 left-3 flex items-center gap-2">
+                          <span className="px-3 py-1 rounded-full bg-[#7A1034] text-white text-xs font-bold uppercase tracking-wider shadow">
+                            {store.zone}
+                          </span>
                         </div>
-                        <div className="absolute bottom-2 left-2 inline-flex items-center gap-1 text-[10px] font-bold text-white bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          Open 7 AM - 10:30 PM
+
+                        {/* Photos Count Badge */}
+                        <div className="absolute bottom-3 left-3 flex items-center gap-1 text-xs font-bold text-white bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
+                          <ImageIcon className="w-3.5 h-3.5 text-[#F9AD24]" />
+                          <span>{photosCount} {t('stores.photosCount')}</span>
+                        </div>
+
+                        {/* PIN Code Badge */}
+                        <div className="absolute bottom-3 right-3 font-mono text-xs font-bold text-[#570B26] bg-[#FFF9F0] px-2.5 py-1 rounded-lg border border-[#EADDE2] shadow">
+                          PIN {store.pincode}
                         </div>
                       </div>
 
-                      {/* Store Details */}
-                      <div className="flex-1 min-w-0 flex flex-col justify-between">
+                      {/* Store Card Content */}
+                      <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                         <div>
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            <h3 className="text-base sm:text-lg font-bold text-[#292329] group-hover:text-[#7A1034] transition-colors leading-tight">
-                              {store.name}
-                            </h3>
-                            <span className="font-mono text-xs font-bold text-[#570B26] bg-[#FFF9F0] px-2 py-0.5 rounded-md border border-[#EADDE2] shrink-0">
-                              PIN {store.pincode}
-                            </span>
-                          </div>
+                          <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#570B26] group-hover:text-[#7A1034] transition-colors leading-tight">
+                            {store.name}
+                          </h3>
 
-                          <p className="text-xs text-[#292329]/80 leading-relaxed mb-1.5">
+                          <p className="text-xs sm:text-sm text-[#292329]/80 font-sans mt-2 leading-relaxed line-clamp-2">
                             {store.address}
                           </p>
 
-                          <p className="text-[11px] font-medium text-[#7A1034] flex items-center gap-1 mb-2.5">
+                          <p className="text-xs font-semibold text-[#7A1034] mt-1.5 flex items-center gap-1.5">
                             <MapPin className="w-3.5 h-3.5 text-[#F9AD24] shrink-0" />
                             <span>Landmark: {store.landmark}</span>
                           </p>
 
-                          {/* Amenity Badges */}
-                          <div className="flex flex-wrap gap-1.5 mb-3">
-                            {store.features.slice(0, 3).map((f, i) => (
+                          {/* Quick Facilities */}
+                          <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-[#EADDE2]/70">
+                            {store.features.slice(0, 3).map((feat, i) => (
                               <span
                                 key={i}
-                                className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-[#FFF9F0] text-[#570B26] border border-[#EADDE2]"
+                                className="text-[11px] font-medium px-2.5 py-0.5 rounded-md bg-[#FFF9F0] text-[#570B26] border border-[#EADDE2]"
                               >
-                                {f}
+                                {feat}
                               </span>
                             ))}
+                            {store.features.length > 3 && (
+                              <span className="text-[11px] font-bold px-2 py-0.5 text-[#7A1034]">
+                                +{store.features.length - 3} more
+                              </span>
+                            )}
                           </div>
                         </div>
 
-                        {/* Action Buttons Row */}
-                        <div className="pt-3 border-t border-[#EADDE2] flex flex-wrap items-center justify-between gap-2">
-                          <a
-                            href={`tel:${store.phone.replace(/[^0-9]/g, '')}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#7A1034] hover:text-[#570B26] bg-[#F7EAF0] px-3 py-1.5 rounded-lg border border-[#7A1034]/20 transition-colors"
-                          >
-                            <Phone className="w-3.5 h-3.5 text-[#7A1034]" />
-                            <span>{store.phone}</span>
-                          </a>
+                        {/* Card Footer with Timings and CTA Button */}
+                        <div className="pt-3 border-t border-[#EADDE2] flex flex-wrap items-center justify-between gap-3">
+                          <div className="flex items-center gap-1.5 text-xs text-[#766A70]">
+                            <Clock className="w-3.5 h-3.5 text-[#7A1034]" />
+                            <span className="font-medium">{store.timings.split('(')[0]}</span>
+                          </div>
 
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => setActiveStore(store)}
-                              className="text-xs font-bold text-[#7A1034] hover:underline px-2 py-1"
-                            >
-                              Show on Map
-                            </button>
-
-                            <a
-                              href={`https://maps.google.com/?q=${encodeURIComponent(store.googleMapQuery)}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg bg-[#F9AD24] text-[#570B26] hover:bg-[#FCE2A9] text-xs font-bold transition-all shadow-xs"
-                            >
-                              <Navigation className="w-3.5 h-3.5" />
-                              <span>Get Directions</span>
-                            </a>
+                          <div className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#7A1034] group-hover:bg-[#570B26] text-white text-xs font-bold transition-all shadow-sm">
+                            <span>{t('btn.viewDetails')}</span>
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })
-              )}
+                    </Link>
+                  </FadeIn>
+                );
+              })}
             </div>
-
-            {/* Right Column: Clean Interactive Map with Pins & Google Maps View (5 Cols - Sticky) */}
-            <div className="lg:col-span-5 sticky top-[165px]">
-              <div className="bg-white rounded-3xl border border-[#EADDE2] shadow-xl overflow-hidden">
-                {/* Header with Store Name + Map View Mode Toggle */}
-                <div className="bg-[#570B26] text-white p-4 flex items-center justify-between border-b border-[#7A1034]">
-                  <div>
-                    <span className="text-[10px] uppercase tracking-wider text-[#FCE2A9] font-bold block">
-                      Active Supermarket Branch
-                    </span>
-                    <h4 className="text-base font-extrabold text-white leading-tight">
-                      {activeStore.name}
-                    </h4>
-                  </div>
-
-                  {/* Toggle between Live Google Map and Interactive Map Pins */}
-                  <div className="flex items-center gap-1 bg-white/10 p-1 rounded-xl">
-                    <button
-                      onClick={() => setMapMode('google')}
-                      className={`text-xs px-2.5 py-1 rounded-lg font-bold transition-all ${
-                        mapMode === 'google'
-                          ? 'bg-[#F9AD24] text-[#570B26] shadow-xs'
-                          : 'text-white hover:bg-white/20'
-                      }`}
-                    >
-                      Google Map
-                    </button>
-                    <button
-                      onClick={() => setMapMode('interactive')}
-                      className={`text-xs px-2.5 py-1 rounded-lg font-bold transition-all ${
-                        mapMode === 'interactive'
-                          ? 'bg-[#F9AD24] text-[#570B26] shadow-xs'
-                          : 'text-white hover:bg-white/20'
-                      }`}
-                    >
-                      Chennai Pins
-                    </button>
-                  </div>
-                </div>
-
-                {/* Map View Canvas */}
-                {mapMode === 'google' ? (
-                  /* Live Embedded Google Maps View */
-                  <div className="relative h-[380px] sm:h-[420px] w-full bg-[#EADDE2]">
-                    <iframe
-                      title={`Google Map - ${activeStore.name}`}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      loading="lazy"
-                      allowFullScreen
-                      referrerPolicy="no-referrer-when-downgrade"
-                      src={`https://maps.google.com/maps?q=${encodeURIComponent(activeStore.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                    />
-                  </div>
-                ) : (
-                  /* Interactive Clean Map with Clickable Supermarket Pins */
-                  <div className="relative h-[380px] sm:h-[420px] w-full bg-gradient-to-br from-[#FFF9F0] via-[#FAF5EC] to-[#EFE7D8] overflow-hidden select-none border-b border-[#EADDE2]">
-                    {/* Visual Bay of Bengal Coastline on East */}
-                    <div className="absolute right-0 top-0 bottom-0 w-[22%] bg-gradient-to-l from-[#BAE6FD]/60 via-[#E0F2FE]/40 to-transparent pointer-events-none">
-                      <span className="absolute right-2 top-8 text-[10px] font-bold text-[#0369A1]/60 uppercase tracking-widest rotate-90">
-                        Bay of Bengal Coast
-                      </span>
-                    </div>
-
-                    {/* Waterways and Roads */}
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M 0,120 Q 150,140 250,110 T 450,100" fill="none" stroke="#0284C7" strokeWidth="6" />
-                      <path d="M 0,260 Q 180,290 300,240 T 500,220" fill="none" stroke="#0284C7" strokeWidth="8" />
-                      <path d="M 100,0 L 220,450" fill="none" stroke="#9CA3AF" strokeWidth="3" strokeDasharray="4,4" />
-                      <path d="M 220,0 L 350,450" fill="none" stroke="#9CA3AF" strokeWidth="4" />
-                    </svg>
-
-                    {/* Interactive Clickable Pins */}
-                    {filteredStores.map((store) => {
-                      const isSelected = activeStore.id === store.id;
-                      const pos = getPinPos(store.coordinates.lat, store.coordinates.lng);
-
-                      return (
-                        <div
-                          key={store.id}
-                          style={{ top: pos.top, left: pos.left }}
-                          onClick={() => setActiveStore(store)}
-                          className={`absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer transition-all duration-300 ${
-                            isSelected ? 'scale-115 z-30' : 'hover:scale-110'
-                          }`}
-                        >
-                          <div className="flex flex-col items-center group">
-                            {/* Pin Badge */}
-                            <div
-                              className={`px-2.5 py-1 rounded-full text-[11px] font-bold shadow-md flex items-center gap-1 whitespace-nowrap transition-all border ${
-                                isSelected
-                                  ? 'bg-[#F9AD24] text-[#570B26] border-[#570B26] ring-4 ring-[#F9AD24]/40'
-                                  : 'bg-[#7A1034] text-white border-white/80 hover:bg-[#570B26]'
-                              }`}
-                            >
-                              <MapPin className={`w-3.5 h-3.5 ${isSelected ? 'text-[#570B26]' : 'text-[#F9AD24]'}`} />
-                              <span>{store.area}</span>
-                            </div>
-
-                            {/* Pin Point */}
-                            <div
-                              className={`w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] -mt-[1px] ${
-                                isSelected ? 'border-t-[#F9AD24]' : 'border-t-[#7A1034]'
-                              }`}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-[10px] font-semibold text-[#766A70] shadow-xs">
-                      Click any pin to inspect branch
-                    </div>
-                  </div>
-                )}
-
-                {/* Active Store Full Card Body */}
-                <div className="p-5 space-y-4">
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider text-[#766A70] font-bold block mb-1">
-                      Full Address &amp; Landmark
-                    </span>
-                    <p className="text-xs sm:text-sm text-[#292329] leading-relaxed font-medium">
-                      {activeStore.address}
-                    </p>
-                    <p className="text-xs text-[#7A1034] mt-1 font-semibold flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-[#F9AD24] shrink-0" />
-                      Landmark: {activeStore.landmark}
-                    </p>
-                  </div>
-
-                  {/* Operational Info Grid */}
-                  <div className="pt-3 border-t border-[#EADDE2] grid grid-cols-2 gap-3 text-xs">
-                    <div className="bg-[#FFF9F0] p-2.5 rounded-xl border border-[#EADDE2]">
-                      <span className="text-[#766A70] text-[11px] block font-medium">Operating Hours:</span>
-                      <strong className="text-[#7A1034] font-bold text-xs block mt-0.5">{activeStore.timings}</strong>
-                    </div>
-                    <div className="bg-[#FFF9F0] p-2.5 rounded-xl border border-[#EADDE2]">
-                      <span className="text-[#766A70] text-[11px] block font-medium">Branch Phone:</span>
-                      <strong className="text-[#7A1034] font-bold text-xs block mt-0.5">{activeStore.phone}</strong>
-                    </div>
-                  </div>
-
-                  {/* Amenities Checklist */}
-                  <div className="pt-3 border-t border-[#EADDE2]">
-                    <span className="text-[11px] uppercase tracking-wider text-[#766A70] font-bold block mb-2">
-                      Branch Facilities
-                    </span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                      {activeStore.features.map((f, i) => (
-                        <div key={i} className="flex items-center gap-1.5 text-xs text-[#292329]">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#7A1034] shrink-0" />
-                          <span className="font-medium">{f}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Dual Action CTAs */}
-                  <div className="pt-4 border-t border-[#EADDE2] flex flex-col gap-2.5">
-                    <a
-                      href={`https://maps.google.com/?q=${encodeURIComponent(activeStore.googleMapQuery)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#F9AD24] text-[#570B26] font-bold text-sm hover:bg-[#FCE2A9] transition-all shadow-md hover:shadow-lg"
-                    >
-                      <Navigation className="w-4 h-4" />
-                      Navigate on Google Maps
-                      <ExternalLink className="w-3.5 h-3.5 ml-1" />
-                    </a>
-
-                    <a
-                      href={`tel:${activeStore.phone.replace(/[^0-9]/g, '')}`}
-                      className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-[#7A1034] text-white font-bold text-xs hover:bg-[#570B26] transition-colors shadow-xs"
-                    >
-                      <Phone className="w-3.5 h-3.5 text-[#F9AD24]" />
-                      Call {activeStore.name}
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
         </Container>
       </section>
 
-      {/* Customer Service & Reassurance Banner */}
+      {/* Customer Reassurance */}
       <section className="py-12 bg-white border-t border-[#EADDE2]">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-center md:text-left">
@@ -505,7 +482,7 @@ export const StoreLocator: React.FC = () => {
               <div>
                 <h4 className="font-bold text-[#292329] text-base">Hassle-Free Parking</h4>
                 <p className="text-xs text-[#766A70] mt-1 leading-relaxed">
-                  Dedicated customer two-wheeler and four-wheeler parking spaces available across our supermarket branches.
+                  Dedicated customer two-wheeler and four-wheeler parking bays across our supermarket &amp; hypermarket branches.
                 </p>
               </div>
             </div>
@@ -517,7 +494,7 @@ export const StoreLocator: React.FC = () => {
               <div>
                 <h4 className="font-bold text-[#292329] text-base">Instant Multi-Counter Billing</h4>
                 <p className="text-xs text-[#766A70] mt-1 leading-relaxed">
-                  Fast billing lanes accepting UPI, Google Pay, Credit/Debit cards, Sodexo, and cash.
+                  Fast checkout lanes accepting UPI, Google Pay, Credit/Debit cards, Sodexo, and cash.
                 </p>
               </div>
             </div>

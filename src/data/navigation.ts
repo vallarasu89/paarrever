@@ -3,7 +3,7 @@ import { NavItem, AnnouncementItem } from '@/types/navigation';
 export const ANNOUNCEMENTS: AnnouncementItem[] = [
   {
     id: 'ann-1',
-    message: 'Welcome to PAARR EVER — 25+ Neighborhood Supermarkets across Chennai & Tamil Nadu',
+    message: 'Welcome to PAARR EVER — Neighborhood Supermarkets across Chennai & Tamil Nadu',
     highlightText: 'Explore Stores',
     href: '/stores',
   },

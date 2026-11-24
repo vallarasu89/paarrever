@@ -23,4 +23,7 @@ export interface StoreLocation {
   features: string[];
   isFeatured?: boolean;
   imageUrl: string;
+  images?: string[];
+  description?: string;
+  partnerBrands?: string[];
 }

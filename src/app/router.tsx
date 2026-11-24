@@ -8,6 +8,7 @@ const Home = lazy(() => import('@/features/home/Home'));
 const About = lazy(() => import('@/features/about/About'));
 const Categories = lazy(() => import('@/features/categories/Categories'));
 const StoreLocator = lazy(() => import('@/features/store-locator/StoreLocator'));
+const StoreDetails = lazy(() => import('@/features/store-locator/StoreDetails'));
 const Contact = lazy(() => import('@/features/contact/Contact'));
 const Reviews = lazy(() => import('@/features/reviews/Reviews'));
 const PaarrPassport = lazy(() => import('@/features/paarr-passport/PaarrPassport'));
@@ -52,6 +53,14 @@ export const router = createBrowserRouter([
         element: (
           <SuspenseWrapper>
             <StoreLocator />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: 'stores/:storeId',
+        element: (
+          <SuspenseWrapper>
+            <StoreDetails />
           </SuspenseWrapper>
         ),
       },
